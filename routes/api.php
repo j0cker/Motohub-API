@@ -17,5 +17,13 @@ use Illuminate\Http\Request;
     return $request->user();
 });*/
 
-//Ingresar Trabajadores
+
+/*
+**** End Points Generales ****
+*/
+
+// Ingresar Usuarios
 Route::get('/usuarios/ingresar', 'APIUsuarios@Ingresar');
+
+// Registro Usuarios por correo
+Route::get('/usuarios/registrar', 'APIUsuarios@Registrar');
