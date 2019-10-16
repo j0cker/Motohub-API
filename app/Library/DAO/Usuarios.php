@@ -39,6 +39,18 @@ class Usuarios extends Model
 
     }
 
+    public function scopeLookForByEmail($query, $user)
+    {
+
+        Log::info("[Usuario][scopeLookForByEmail]");
+        Log::info("[Usuario][scopeLookForByEmail]" . $user);
+
+        return $query->where([
+          ['correo', '=', $user]
+        ]);
+
+    }
+
     public function scopeCreateUser($query, $correo, $password, $nombre, $apellido, $edad, $celular, $motoClub, $seguro, $sangre, $alergia, $organos){
 
       Log::info("[Usuarios][scopeCreateUser]");

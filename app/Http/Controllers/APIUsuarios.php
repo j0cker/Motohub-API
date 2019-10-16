@@ -87,6 +87,70 @@ class APIUsuarios extends Controller
         }
     }
 
+    public function Verificar(Request $request){
+
+        Log::info('[Ingresar]');
+
+        Log::info("[Ingresar] Método Recibido: ". $request->getMethod());
+
+        if($request->isMethod('GET')) {
+
+            header('Access-Control-Allow-Origin: *');
+            header('Access-Control-Allow-Methods: *');
+            header('Access-Control-Allow-Headers: *');
+
+            $this->validate($request, [
+                'correo' => 'required'
+              ]);
+
+            Log::info('[Ingresar] conn1');
+            $correo = $request->input('correo');
+
+            
+            Log::info('[Ingresar] conn');
+
+
+            $user = Usuarios::lookForByEmail($correo)->get();
+ 
+            Log::info($user);
+
+            if(count($user)>0){
+
+                /***********************************************/
+                /*$jwt_token = null;
+
+                $factory = JWTFactory::customClaims([
+                'sub' => $user->first()->id, //id a conciliar del usuario
+                'iss' => config('app.name'),
+                'iat' => Carbon::now()->timestamp,
+                'exp' => Carbon::tomorrow()->timestamp,
+                'nbf' => Carbon::now()->timestamp,
+                'jti' => uniqid(),
+                'usr' => $user
+                ]);
+
+                $payload = $factory->make();
+
+                $jwt_token = JWTAuth::encode($payload);*/
+
+                $responseJSON = new ResponseJSON(Lang::get('messages.successTrue'),Lang::get('messages.BDsuccess'), count($user));
+                $responseJSON->data = $user;
+                // $responseJSON->token = $jwt_token->get();
+
+                /***********************************************/
+                return json_encode($responseJSON);
+                
+                } else {
+                
+                $responseJSON = new ResponseJSON(Lang::get('messages.successFalse'),Lang::get('messages.errorsBD'), count($user));
+                $responseJSON->data = [];
+                return json_encode($responseJSON);
+                
+            }
+        }
+        
+    }
+
     public function Registrar(Request $request){
       
         Log::info('[APIUserNormal][registrar]');
@@ -230,6 +294,8 @@ class APIUsuarios extends Controller
             abort(404);
         }
     }
+
+
 }
 
 ?>

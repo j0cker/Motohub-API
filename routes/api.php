@@ -27,3 +27,6 @@ Route::get('/usuarios/ingresar', 'APIUsuarios@Ingresar');
 
 // Registro Usuarios por correo
 Route::get('/usuarios/registrar', 'APIUsuarios@Registrar');
+
+// Verificar correo Usuarios
+Route::get('/usuarios/verificar', 'APIUsuarios@Verificar');
