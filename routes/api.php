@@ -30,3 +30,6 @@ Route::get('/usuarios/registrar', 'APIUsuarios@Registrar');
 
 // Verificar correo Usuarios
 Route::get('/usuarios/verificar', 'APIUsuarios@Verificar');
+
+// Verificar id FB Usuarios
+Route::get('/usuarios/verificarFB', 'APIUsuarios@VerificarFB');

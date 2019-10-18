@@ -16,10 +16,11 @@ update and insert doesnt need get->()
 class Permisos_inter extends Model
 {
     public $table = 'permisos_inter';
-    public $timestamps = false;
+    public $timestamps = true;
     //protected $dateFormat = 'U';
     const CREATED_AT = 'created_at';
     //const UPDATED_AT = 'updated_at';
+    const UPDATED_AT = null;
     //public $attributes;
 
 

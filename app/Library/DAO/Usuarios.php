@@ -16,10 +16,10 @@ update and insert doesnt need get->()
 class Usuarios extends Model
 {
     public $table = 'usuarios';
-    public $timestamps = false;
+    public $timestamps = true;
     //protected $dateFormat = 'U';
-    //const CREATED_AT = 'created_at';
-    //const UPDATED_AT = 'updated_at';
+    const CREATED_AT = 'created_at';
+    const UPDATED_AT = 'updated_at';
     //public $attributes;
 
 
@@ -51,12 +51,25 @@ class Usuarios extends Model
 
     }
 
-    public function scopeCreateUser($query, $correo, $password, $nombre, $apellido, $edad, $celular, $motoClub, $seguro, $sangre, $alergia, $organos){
+    public function scopeLookForByIDfb($query, $user)
+    {
+
+        Log::info("[Usuario][scopeLookForByEmail]");
+        Log::info("[Usuario][scopeLookForByEmail]" . $user);
+
+        return $query->where([
+          ['id_userfb', '=', $user]
+        ]);
+
+    }
+
+    public function scopeCreateUser($query, $id_userfb, $correo, $password, $nombre, $apellido, $edad, $celular, $motoClub, $seguro, $sangre, $alergia, $organos){
 
       Log::info("[Usuarios][scopeCreateUser]");
 
       $usuarios = new Usuarios();
 
+      $usuarios->id_userfb = $id_userfb;
       $usuarios->correo = $correo;
       $usuarios->password = hash("sha256", $password);
       $usuarios->nombre = $nombre;

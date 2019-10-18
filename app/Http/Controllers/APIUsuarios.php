@@ -89,9 +89,9 @@ class APIUsuarios extends Controller
 
     public function Verificar(Request $request){
 
-        Log::info('[Ingresar]');
+        Log::info('[Verificar Correo]');
 
-        Log::info("[Ingresar] Método Recibido: ". $request->getMethod());
+        Log::info("[verificar Correo] Método Recibido: ". $request->getMethod());
 
         if($request->isMethod('GET')) {
 
@@ -103,14 +103,78 @@ class APIUsuarios extends Controller
                 'correo' => 'required'
               ]);
 
-            Log::info('[Ingresar] conn1');
+            Log::info('[Verificar Correo] conn1');
             $correo = $request->input('correo');
 
             
-            Log::info('[Ingresar] conn');
+            Log::info('[Verificar Correo] conn');
 
 
             $user = Usuarios::lookForByEmail($correo)->get();
+ 
+            Log::info($user);
+
+            if(count($user)>0){
+
+                /***********************************************/
+                /*$jwt_token = null;
+
+                $factory = JWTFactory::customClaims([
+                'sub' => $user->first()->id, //id a conciliar del usuario
+                'iss' => config('app.name'),
+                'iat' => Carbon::now()->timestamp,
+                'exp' => Carbon::tomorrow()->timestamp,
+                'nbf' => Carbon::now()->timestamp,
+                'jti' => uniqid(),
+                'usr' => $user
+                ]);
+
+                $payload = $factory->make();
+
+                $jwt_token = JWTAuth::encode($payload);*/
+
+                $responseJSON = new ResponseJSON(Lang::get('messages.successTrue'),Lang::get('messages.BDsuccess'), count($user));
+                $responseJSON->data = $user;
+                // $responseJSON->token = $jwt_token->get();
+
+                /***********************************************/
+                return json_encode($responseJSON);
+                
+                } else {
+                
+                $responseJSON = new ResponseJSON(Lang::get('messages.successFalse'),Lang::get('messages.errorsBD'), count($user));
+                $responseJSON->data = [];
+                return json_encode($responseJSON);
+                
+            }
+        }
+        
+    }
+
+    public function VerificarFB(Request $request){
+
+        Log::info('[VerificarFB]');
+
+        Log::info("[VerificarFB] Método Recibido: ". $request->getMethod());
+
+        if($request->isMethod('GET')) {
+
+            header('Access-Control-Allow-Origin: *');
+            header('Access-Control-Allow-Methods: *');
+            header('Access-Control-Allow-Headers: *');
+
+            $this->validate($request, [
+                'id_userfb' => 'required'
+              ]);
+
+            Log::info('[VerificarFB] conn1');
+            $id_userfb = $request->input('id_userfb');
+
+            
+            Log::info('[VerificarFB] conn');
+
+
+            $user = Usuarios::lookForByIDfb($id_userfb)->get();
  
             Log::info($user);
 
@@ -173,7 +237,8 @@ class APIUsuarios extends Controller
                 'cel' => 'required',
               ])->validate();
   */    
-              //Log::info('[APIUserNormal][registrar]2');
+            //Log::info('[APIUserNormal][registrar]2');
+            $id_userfb = $request->input('id_userfb');
             $correo = $request->input('correo');
             $password = $request->input('password');
             $nombre = $request->input('nombre');
@@ -202,7 +267,7 @@ class APIUsuarios extends Controller
             $celContacto = $request->input('celContacto');
 
 
-        
+            Log::info("[APIUserNormal][registar] ID User FB: ". $id_userfb);
             Log::info("[APIUserNormal][registar] Correo: ". $correo);
             Log::info("[APIUserNormal][registar] Password: ". $password);
             Log::info("[APIUserNormal][registar] Nombre: ". $nombre);
@@ -231,7 +296,7 @@ class APIUsuarios extends Controller
             Log::info("[APIUserNormal][registar] Cel de Contacto: ". $celContacto);
         
                 
-            $usuario = Usuarios::createUser( $correo, $password, $nombre, $apellido, $edad, $celular, $motoClub, $seguro, $sangre, $alergia, $organos);
+            $usuario = Usuarios::createUser( $id_userfb, $correo, $password, $nombre, $apellido, $edad, $celular, $motoClub, $seguro, $sangre, $alergia, $organos);
             Log::info($usuario);
 
             $motos = Motos::createUser( $conductor, $propietario, $marca, $submarca, $modelo, $motor, $vin, $cc, $ciudad, $placas, $compania, $poliza);
