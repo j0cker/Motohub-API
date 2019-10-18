@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Lang; //Lenguaje
 use App; //Config gral. app
+use App\Library\CLASSES\SMS;
 use Config; //Config gral. app
 use Auth;
 use carbon\Carbon; //Manipuleo de Fechas
@@ -215,6 +216,17 @@ class APIUsuarios extends Controller
         
     }
 
+    public function SMS(Request $request){
+
+        Log::info('[APIUsuarios][SMS]');
+
+        Log::info("[APIUsuarios][SMS] Método Recibido: ". $request->getMethod());
+
+        $sms = new SMS();
+        $enviado = $sms->enviarMensaje('webos','+525554029179');
+        Log::info('[APIUsuarios][SMS] enviado: '. $enviado);
+    }
+
     public function Registrar(Request $request){
       
         Log::info('[APIUserNormal][registrar]');
@@ -312,6 +324,10 @@ class APIUsuarios extends Controller
                 $permisos_inter_object = Permisos_inter::createPermisoInter($usuario[0]->id);
 
                 if ($permisos_inter_object[0]->save == 1) {
+
+                    //mandar el SMS de verificacion
+                    //$sms = new SMS();
+                    //$enviado = $sms::enviarMensaje('webos','5554029179');
 
                     $permisos_inter_object = Permisos_inter::lookForByIdUsuarios($usuario[0]->id)->get();
                     $permisos_inter = array();

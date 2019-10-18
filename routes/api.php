@@ -33,3 +33,6 @@ Route::get('/usuarios/verificar', 'APIUsuarios@Verificar');
 
 // Verificar id FB Usuarios
 Route::get('/usuarios/verificarFB', 'APIUsuarios@VerificarFB');
+
+// Prueba SMS
+Route::get('/usuarios/enviarsms', 'APIUsuarios@SMS');
