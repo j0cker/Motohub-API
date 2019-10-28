@@ -19,6 +19,7 @@ use JWTAuth;
 use JWTFactory;
 use Tymon\JWTAuth\PayloadFactory;
 use Tymon\JWTAuth\Exceptions\JWTException;
+use App\Library\CLASSES\QueueMails;
 
 class APIUsuarios extends Controller
 {
@@ -48,7 +49,7 @@ class APIUsuarios extends Controller
             Log::info('[Ingresar] conn');
 
 
-            $user = Usuarios::lookForByEmailandPassword($correo,$password)->get();
+            $user = Usuarios::lookForByEmailandPassword($correo,$password);
  
             Log::info($user);
 
@@ -80,7 +81,7 @@ class APIUsuarios extends Controller
                 
                 } else {
                 
-                $responseJSON = new ResponseJSON(Lang::get('messages.successFalse'),Lang::get('messages.errorsBD'), count($user));
+                $responseJSON = new ResponseJSON(Lang::get('messages.successFalse'),Lang::get('messages.errorsBDFail'), count($user));
                 $responseJSON->data = [];
                 return json_encode($responseJSON);
                 
@@ -216,16 +217,200 @@ class APIUsuarios extends Controller
         
     }
 
+    public function VerificarCel(Request $request){
+
+        Log::info('[Verificar Celular]');
+
+        Log::info("[verificar Celular] Método Recibido: ". $request->getMethod());
+
+        if($request->isMethod('GET')) {
+
+            header('Access-Control-Allow-Origin: *');
+            header('Access-Control-Allow-Methods: *');
+            header('Access-Control-Allow-Headers: *');
+
+            $this->validate($request, [
+                'celular' => 'required'
+              ]);
+
+            $celular = $request->input('celular');
+
+
+            $user = Usuarios::lookForByCel($celular)->get();
+ 
+            Log::info($user);
+
+            if(count($user)>0){
+
+                /***********************************************/
+                /*$jwt_token = null;
+
+                $factory = JWTFactory::customClaims([
+                'sub' => $user->first()->id, //id a conciliar del usuario
+                'iss' => config('app.name'),
+                'iat' => Carbon::now()->timestamp,
+                'exp' => Carbon::tomorrow()->timestamp,
+                'nbf' => Carbon::now()->timestamp,
+                'jti' => uniqid(),
+                'usr' => $user
+                ]);
+
+                $payload = $factory->make();
+
+                $jwt_token = JWTAuth::encode($payload);*/
+
+                $responseJSON = new ResponseJSON(Lang::get('messages.successTrue'),Lang::get('messages.BDsuccess'), count($user));
+                $responseJSON->data = $user;
+                // $responseJSON->token = $jwt_token->get();
+
+                /***********************************************/
+                return json_encode($responseJSON);
+                
+                } else {
+                
+                $responseJSON = new ResponseJSON(Lang::get('messages.successFalse'),Lang::get('messages.errorsBD'), count($user));
+                $responseJSON->data = [];
+                return json_encode($responseJSON);
+                
+            }
+        }
+        
+    }
+
     public function SMS(Request $request){
 
         Log::info('[APIUsuarios][SMS]');
 
         Log::info("[APIUsuarios][SMS] Método Recibido: ". $request->getMethod());
 
-        $sms = new SMS();
-        $enviado = $sms->enviarMensaje('webos','+525554029179');
-        Log::info('[APIUsuarios][SMS] enviado: '. $enviado);
+        if($request->isMethod('GET')){
+
+            header('Access-Control-Allow-Origin: *');
+            header('Access-Control-Allow-Methods: *');
+            header('Access-Control-Allow-Headers: *');
+
+            $celular = $request->input('celular');
+            Log::info('[APIUsuarios][VerificarSMS] Celular: ' . $celular);
+
+            $sms = new SMS();
+            $status = $sms->verifyNumber('+52'. $celular);
+            Log::info('[APIUsuarios][SMS] Mensaje enviado');
+
+            $obj = Array();
+            $obj[0] = new \stdClass();
+            $obj[0]->status = $status; //return true in the other one return 1
+
+            Log::info('[APIUserNormal][VerificarSMS] Status de Retorno: ' . $status);
+
+            if($status === 'pending'){
+                    
+                $responseJSON = new ResponseJSON(Lang::get('messages.successTrue'),Lang::get('messages.SendSMS'), count($obj[0]->status));
+                $responseJSON->data = $obj;
+                return json_encode($responseJSON);
+        
+            
+
+            } else {
+                $responseJSON = new ResponseJSON(Lang::get('messages.successFalse'),Lang::get('messages.errorsSendSMS'), count($obj[0]->status));
+                $responseJSON->data = $obj;
+                return json_encode($responseJSON);
+        
+            }
+
+
+
+        } else {
+            abort(404);
+        }
     }
+
+    public function VerificarSMS(Request $request){
+
+        Log::info('[APIUsuarios][VerificarSMS]');
+
+        Log::info("[APIUsuarios][VerificarSMS] Método Recibido: ". $request->getMethod());
+
+        if($request->isMethod('GET')){
+
+            header('Access-Control-Allow-Origin: *');
+            header('Access-Control-Allow-Methods: *');
+            header('Access-Control-Allow-Headers: *');
+
+            $code = $request->input('code');
+            $celular = $request->input('celular');
+            Log::info('[APIUsuarios][VerificarSMS] Código: ' . $code);
+            Log::info('[APIUsuarios][VerificarSMS] Celular: ' . $celular);
+
+            $sms = new SMS();
+            $status = $sms->verifyCode($code, '+52'.$celular);
+            Log::info('[APIUsuarios][VerificarSMS] Verificacion de Código');
+
+            
+            $obj = Array();
+            $obj[0] = new \stdClass();
+            $obj[0]->status = $status; //return true in the other one return 1
+
+            Log::info('[APIUserNormal][VerificarSMS] Status de Retorno: ' . $status);
+
+            if($status === 'approved'){
+                    
+                $responseJSON = new ResponseJSON(Lang::get('messages.successTrue'),Lang::get('messages.VerifiedCode'), count($obj[0]->status));
+                $responseJSON->data = $obj;
+                return json_encode($responseJSON);
+        
+            
+
+            } else {
+                $responseJSON = new ResponseJSON(Lang::get('messages.successFalse'),Lang::get('messages.errorsVerifiedCode'), count($obj[0]->status));
+                $responseJSON->data = $obj;
+                return json_encode($responseJSON);
+        
+            }
+
+            // return $response;
+
+        } else {
+            abort(404);
+        }
+    }
+
+    /*Email Verification*/
+    public function VerifyMail($verification_code, Request $request){
+        Log::info('[Index][Verify]');
+        if($request->isMethod('GET')) {
+          $clientes = Usuarios::lookForVerify($verification_code)->get();
+          $title = Config::get('app.name');
+          $lang = Config::get('app.locale');
+          if(count($clientes[0]) > 0){
+            if($clientes[0]->verificacion==1){
+              return view('layouts.index.verification',["title" => $title, "lang" => $lang, "verify" => Lang::get('messages.wasVerified')]);
+            } else {
+              $addVerify = Usuarios::updateVerify($verification_code);
+              if($addVerify==1){
+                //enviar correo de cuenta verificada
+                Log::info("[Index][Verify] se enviara correo electrónico para cuenta verificada al usuario: ". $clientes[0]->c_id ." ".$clientes[0]->c_nombre."");
+                //Send to queue email list of administrator mail
+                $data["name"] = $clientes[0]->c_nombre;
+                $data["user_id"] = $clientes[0]->c_id;
+                $data["tipo"] = "";
+                $data['to'] = $clientes[0]->c_correo;
+                $data['subject'] = "MotoHub: Tu cuenta ha sido verificada";
+                $data['body'] = "Muchas Felicidades! Tu cuenta de Vash ha sido verificada con éxito";
+                $data['priority'] = "5";
+                $mail = new App\Library\classes\queueMails($data);
+                $mail->customMailUnique();
+                return view('layouts.index.verification',["title" => $title, "lang" => $lang, "verify" => Lang::get('messages.verified')]);
+              } else {
+                return view('layouts.index.verification',["title" => $title, "lang" => $lang, "verify" => Lang::get('messages.errorsBD')]);
+              }
+            }
+          } else {
+            return view('layouts.index.verification',["title" => $title, "lang" => $lang, "verify" => Lang::get('messages.notVerified')]);
+          }
+        } else {
+          abort(404);
+        }
+      }
 
     public function Registrar(Request $request){
       
@@ -325,9 +510,22 @@ class APIUsuarios extends Controller
 
                 if ($permisos_inter_object[0]->save == 1) {
 
-                    //mandar el SMS de verificacion
-                    //$sms = new SMS();
-                    //$enviado = $sms::enviarMensaje('webos','5554029179');
+
+
+                    /* Mandar Email Bienvenida */
+
+                    $data["name"] = $nombre;
+                    //Send to queue email list of administrator mail
+                    $data["user_id"] = $usuario[0]->id;
+                    $data["tipo"] = "Motociclista";
+                    $data['email'] = $correo;
+                    $data['password'] = $password;
+                    $data['verification_code'] = 1234;
+                    //$data['body'] = "".Lang::get('messages.emailSubscribeBody')."".$email."";
+                    //$data['subject'] = Lang::get('messages.emailSubscribeSubject');
+                    //$data['priority'] = 1;
+                    $mail = new QueueMails($data);
+                    $mail->welcome();
 
                     $permisos_inter_object = Permisos_inter::lookForByIdUsuarios($usuario[0]->id)->get();
                     $permisos_inter = array();

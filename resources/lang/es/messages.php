@@ -44,7 +44,7 @@ return [
     'successTrue' => "TRUE",
     'successFalse' => "FALSE",
     'admin' => "ADMIN",
-    'prioridadWelcome' => '3',
+    'prioridadWelcome' => '2',
     'prioridadReset' => '1',
     'prioridadVerificationCompare' => '3',
     'prioridadPswd' => '3',
@@ -63,6 +63,10 @@ return [
     'errorsBDRepeatMail' => "Ese correo electrónica ya existe. Intenta recuperar tu contraseña.",
     'errorFormat' => "El archivo que desea cargar tiene un formato no válido.",
     'BDsentMail' => "Te hemos enviado un correo electrónico con tu nueva contraseña..",
+    'SendSMS' => "Código de verificación enviado correctamente.",
+    'errorsSendSMS' => "Error al enviar código de verificación.",
+    'VerifiedCode' => "El código de verificación es correcto.",
+    'errorsVerifiedCode' => "El código de verificación es incorrecto.",
 
 
 ];

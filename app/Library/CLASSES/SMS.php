@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Log; //Login
 
 
 
+
 class SMS
 {
 
@@ -29,8 +30,8 @@ class SMS
 
     public function enviarMensaje($message, $cellNumber){
 
-        Log::info('[SMS][enviarMensaje]: '. $this->account_sid);
-        Log::info('[SMS][enviarMensaje]: '. $this->auth_token);
+        Log::info('[SMS][enviarMensaje]: account_sid: '. $this->account_sid);
+        Log::info('[SMS][enviarMensaje]: auth_token: '. $this->auth_token);
         $client = new Client($this->account_sid, $this->auth_token);
 
         return $client->messages->create(
@@ -41,6 +42,34 @@ class SMS
                 'body' => $message
             )
         );
+    }
+
+    public function verifyNumber($cellNumber){
+
+        $client = new Client($this->account_sid, $this->auth_token);
+
+        $verification = $client->verify->v2->services('VAdee980c1dbbb8b16efd3f5c9e2272974')
+        ->verifications
+        ->create($cellNumber, 'sms');
+
+        Log::info('[SMS][verifyNumber] Status: '. $verification->status);
+        return $verification->status;
+
+
+    }
+
+    public function verifyCode($code, $cellNumber){
+
+        $client = new Client($this->account_sid, $this->auth_token);
+
+        $verification_check = $client->verify->v2->services('VAdee980c1dbbb8b16efd3f5c9e2272974')
+        ->verificationChecks
+        ->create($code , // code
+        array("to" => $cellNumber));
+
+        Log::info('[SMS][verifyCode] status: '. $verification_check->status);
+        return $verification_check->status;
+
     }
     
     

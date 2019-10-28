@@ -31,8 +31,18 @@ Route::get('/usuarios/registrar', 'APIUsuarios@Registrar');
 // Verificar correo Usuarios
 Route::get('/usuarios/verificar', 'APIUsuarios@Verificar');
 
+// Verificar celular Usuarios
+Route::get('/usuarios/verificarCel', 'APIUsuarios@VerificarCel');
+
+//Email Verification Code
+Route::get('/verify/{verification_code}', 'APIUsuarios@VerifyMail');
+
 // Verificar id FB Usuarios
 Route::get('/usuarios/verificarFB', 'APIUsuarios@VerificarFB');
 
 // Prueba SMS
 Route::get('/usuarios/enviarsms', 'APIUsuarios@SMS');
+Route::get('/usuarios/verifyCode', 'APIUsuarios@VerificarSMS');
+
+//lanzamiento de correos
+Route::get('/mailsLauncher', 'MailsLauncher@mailsLauncher');

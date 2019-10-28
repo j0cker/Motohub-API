@@ -5,6 +5,7 @@ use Config;
 use App;
 use Log;
 use Illuminate\Database\Eloquent\Model;
+use DB;
 
 /*
 
@@ -29,13 +30,26 @@ class Usuarios extends Model
         Log::info("[Usuario][scopeLookForByEmailandPassword]");
         Log::info("[Usuario][scopeLookForByEmailandPassword]" . $user);
         Log::info("[Usuario][scopeLookForByEmailandPassword]". $password);
-
+        
+        //activar log query
+        DB::connection()->enableQueryLog();
+  
         $pass = hash("sha256", $password);
 
-        return $query->where([
+        $sql =  $query->where([
           ['correo', '=', $user],
           ['password', '=', $pass]
-        ]);
+        ])->get();
+
+        //return true in the other one return 1
+  
+        //log query
+        $queries = DB::getQueryLog();
+        $last_query = end($queries);
+        Log::info($last_query);
+  
+        return $sql;
+
 
     }
 
@@ -51,6 +65,18 @@ class Usuarios extends Model
 
     }
 
+    public function scopeLookForByCel($query, $user)
+    {
+
+        Log::info("[Usuario][scopeLookForByCel]");
+        Log::info("[Usuario][scopeLookForByCel]" . $user);
+
+        return $query->where([
+          ['celular', '=', $user]
+        ]);
+
+    }
+
     public function scopeLookForByIDfb($query, $user)
     {
 
@@ -61,6 +87,20 @@ class Usuarios extends Model
           ['id_userfb', '=', $user]
         ]);
 
+    }
+
+    public function scopeLookForVerify($query, $verification_code){
+      Log::info("[Clientes][scopeLookForVerify]");
+      return $query->where([
+        ['verificacion_code', '=' ,$verification_code]
+      ]);
+    }
+
+    public function scopeUpdateVerify($query, $verification_code){
+      Log::info("[Clientes][scopeUpdateVerify]");
+      return $query->where([
+        ['verificacion_code', '=', $verification_code]
+        ])->update(['verificacion' => 1]);
     }
 
     public function scopeCreateUser($query, $id_userfb, $correo, $password, $nombre, $apellido, $edad, $celular, $motoClub, $seguro, $sangre, $alergia, $organos){
