@@ -5,6 +5,7 @@ use Config;
 use App;
 use Log;
 use Illuminate\Database\Eloquent\Model;
+use DB;
 
 /*
 
@@ -21,6 +22,29 @@ class Contacto_emergencia extends Model
     const CREATED_AT = 'created_at';
     const UPDATED_AT = 'updated_at';
     //public $attributes;
+
+    public function scopeGetContactemerg($query, $id_user){
+
+      Log::info("[Contacto_emergencia][scopeGetContactemerg]");
+
+      // $pass = hash("sha256", $pass);
+
+
+      //activar log query
+      DB::connection()->enableQueryLog();
+
+      $sql = $query->where([
+        ['id_contacto', '=', $id_user],
+      ])->get();
+
+      //log query
+      $queries = DB::getQueryLog();
+      $last_query = end($queries);
+      Log::info($last_query);
+
+      return $sql;
+
+    }
 
 
     public function scopeLookForByEmailandPassword($query, $user,$password)

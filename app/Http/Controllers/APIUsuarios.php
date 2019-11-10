@@ -79,7 +79,7 @@ class APIUsuarios extends Controller
                 /***********************************************/
                 return json_encode($responseJSON);
                 
-                } else {
+            } else {
                 
                 $responseJSON = new ResponseJSON(Lang::get('messages.successFalse'),Lang::get('messages.errorsBDFail'), count($user));
                 $responseJSON->data = [];
@@ -277,6 +277,285 @@ class APIUsuarios extends Controller
         
     }
 
+    public function UpdateSalud(Request $request){
+      
+        Log::info('[APIUserNormal][UpdateSalud]');
+
+        Log::info("[APIUserNormal][UpdateSalud] Método Recibido: ". $request->getMethod());
+
+
+        if($request->isMethod('GET')) {
+
+            header('Access-Control-Allow-Origin: *');
+            header('Access-Control-Allow-Methods: *');
+            header('Access-Control-Allow-Headers: *');
+            
+
+            Validator::make($request->all(), [
+                'token' => 'required'
+            ])->validate();
+            
+            $token = $request->input('token');
+            $id_user = $request->input('id_user');
+            $seguro = $request->input('seguro');
+            $sangre = $request->input('sangre');
+            $alergia = $request->input('alergia');
+            $organos = $request->input('organos');
+
+            Log::info("[GetProfile][GetProfile] Token: ". $token);
+            Log::info("[GetProfile][GetProfile] ID User: ". $id_user);
+            Log::info("[APIUserNormal][registar] Seguro: ". $seguro);
+            Log::info("[APIUserNormal][registar] Sangre: ". $sangre);
+            Log::info("[APIUserNormal][registar] Alergia: ". $alergia);
+            Log::info("[APIUserNormal][registar] Organos: ". $organos);
+        
+                
+            $usuario = Usuarios::updateSalud($id_user, $seguro, $sangre, $alergia, $organos);
+            Log::info($usuario);
+            if($usuario == 1){
+
+                Log::info('[APIUsuarios][UpdateSalud] Se actualizo los datos de salud en la tabla Usuarios');
+                    
+                $responseJSON = new ResponseJSON(Lang::get('messages.successTrue'),Lang::get('messages.BDdata'), count($usuario));
+                $responseJSON->data = $usuario;
+                return json_encode($responseJSON);
+    
+            } else {
+                $responseJSON = new ResponseJSON(Lang::get('messages.successFalse'),Lang::get('messages.errorsBDFail'), count($usuario));
+                $responseJSON->data = $usuario;
+                return json_encode($responseJSON);
+        
+            }
+    
+            return "";
+            
+        } else {
+            abort(404);
+        }
+    }
+
+    public function UpdatePerfil(Request $request){
+      
+        Log::info('[APIUserNormal][UpdatePerfil]');
+
+        Log::info("[APIUserNormal][UpdatePerfil] Método Recibido: ". $request->getMethod());
+
+
+        if($request->isMethod('GET')) {
+
+            header('Access-Control-Allow-Origin: *');
+            header('Access-Control-Allow-Methods: *');
+            header('Access-Control-Allow-Headers: *');
+            
+
+            Validator::make($request->all(), [
+                'token' => 'required'
+            ])->validate();
+            
+            $token = $request->input('token');
+            $id_user = $request->input('id_user');
+            $nombre = $request->input('nombre');
+            $apellido = $request->input('apellido');
+            $edad = $request->input('edad');
+            $celular = $request->input('celular');
+            $motoClub = $request->input('motoClub');
+
+            Log::info("[GetProfile][GetProfile] Token: ". $token);
+            Log::info("[GetProfile][GetProfile] ID User: ". $id_user);
+            Log::info("[APIUserNormal][registar] Nombre: ". $nombre);
+            Log::info("[APIUserNormal][registar] Apellido: ". $apellido);
+            Log::info("[APIUserNormal][registar] Edad: ". $edad);
+            Log::info("[APIUserNormal][registar] Celular: ". $celular);
+            Log::info("[APIUserNormal][registar] Moto Club: ". $motoClub);        
+                
+            $usuario = Usuarios::updatePerfil($id_user, $nombre, $apellido, $edad, $celular, $motoClub);
+            Log::info($usuario);
+            if($usuario == 1){
+
+                Log::info('[APIUsuarios][UpdatePerfil] Se actualizo los datos de usuario en la tabla Usuarios');
+                    
+                $responseJSON = new ResponseJSON(Lang::get('messages.successTrue'),Lang::get('messages.BDdata'), count($usuario));
+                $responseJSON->data = $usuario;
+                return json_encode($responseJSON);
+    
+            } else {
+                $responseJSON = new ResponseJSON(Lang::get('messages.successFalse'),Lang::get('messages.errorsBDFail'), count($usuario));
+                $responseJSON->data = $usuario;
+                return json_encode($responseJSON);
+        
+            }
+    
+            return "";
+            
+        } else {
+            abort(404);
+        }
+    }
+
+    public function UpdateMoto(Request $request){
+      
+        Log::info('[APIUserNormal][UpdatePerfil]');
+
+        Log::info("[APIUserNormal][UpdatePerfil] Método Recibido: ". $request->getMethod());
+
+
+        if($request->isMethod('GET')) {
+
+            header('Access-Control-Allow-Origin: *');
+            header('Access-Control-Allow-Methods: *');
+            header('Access-Control-Allow-Headers: *');
+            
+
+            Validator::make($request->all(), [
+                'token' => 'required'
+            ])->validate();
+            
+            $token = $request->input('token');
+            $id_user = $request->input('id_user');
+            $motor = $request->input('motor');
+            $placas = $request->input('placas');
+
+            Log::info("[GetProfile][GetProfile] Token: ". $token);
+            Log::info("[GetProfile][GetProfile] ID User: ". $id_user);
+            Log::info("[APIUserNormal][registar] Nombre: ". $motor);
+            Log::info("[APIUserNormal][registar] Apellido: ". $placas);       
+                
+            $usuario = Motos::updateMoto($id_user, $motor, $placas);
+            Log::info($usuario);
+            if($usuario == 1){
+
+                Log::info('[APIUsuarios][UpdatePerfil] Se actualizo los datos de la moto en la tabla Motos');
+                    
+                $responseJSON = new ResponseJSON(Lang::get('messages.successTrue'),Lang::get('messages.BDdata'), count($usuario));
+                $responseJSON->data = $usuario;
+                return json_encode($responseJSON);
+    
+            } else {
+                $responseJSON = new ResponseJSON(Lang::get('messages.successFalse'),Lang::get('messages.errorsBDFail'), count($usuario));
+                $responseJSON->data = $usuario;
+                return json_encode($responseJSON);
+        
+            }
+    
+            return "";
+            
+        } else {
+            abort(404);
+        }
+    }
+
+    public function UpdateSeguro(Request $request){
+      
+        Log::info('[APIUserNormal][UpdatePerfil]');
+
+        Log::info("[APIUserNormal][UpdatePerfil] Método Recibido: ". $request->getMethod());
+
+
+        if($request->isMethod('GET')) {
+
+            header('Access-Control-Allow-Origin: *');
+            header('Access-Control-Allow-Methods: *');
+            header('Access-Control-Allow-Headers: *');
+            
+
+            Validator::make($request->all(), [
+                'token' => 'required'
+            ])->validate();
+            
+            $token = $request->input('token');
+            $id_user = $request->input('id_user');
+            $compania = $request->input('compania');
+            $poliza = $request->input('poliza');
+
+            Log::info("[GetProfile][GetProfile] Token: ". $token);
+            Log::info("[GetProfile][GetProfile] ID User: ". $id_user);
+            Log::info("[APIUserNormal][registar] Compania∫: ". $compania);
+            Log::info("[APIUserNormal][registar] Poliza: ". $poliza);       
+                
+            $usuario = Motos::updateSeguro($id_user, $compania, $poliza);
+            Log::info($usuario);
+            if($usuario == 1){
+
+                Log::info('[APIUsuarios][UpdatePerfil] Se actualizo los datos de la moto en la tabla Motos');
+                    
+                $responseJSON = new ResponseJSON(Lang::get('messages.successTrue'),Lang::get('messages.BDdata'), count($usuario));
+                $responseJSON->data = $usuario;
+                return json_encode($responseJSON);
+    
+            } else {
+                $responseJSON = new ResponseJSON(Lang::get('messages.successFalse'),Lang::get('messages.errorsBDFail'), count($usuario));
+                $responseJSON->data = $usuario;
+                return json_encode($responseJSON);
+        
+            }
+    
+            return "";
+            
+        } else {
+            abort(404);
+        }
+    }
+
+    public function VerificarVin(Request $request){
+
+        Log::info('[Verificar Vin]');
+
+        Log::info("[verificar Vin] Método Recibido: ". $request->getMethod());
+
+        if($request->isMethod('GET')) {
+
+            header('Access-Control-Allow-Origin: *');
+            header('Access-Control-Allow-Methods: *');
+            header('Access-Control-Allow-Headers: *');
+
+            $this->validate($request, [
+                'vin' => 'required'
+              ]);
+
+            $vin = $request->input('vin');
+
+
+            $user = Motos::lookForByVin($vin)->get();
+ 
+            Log::info($user);
+
+            if(count($user)>0){
+
+                /***********************************************/
+                /*$jwt_token = null;
+
+                $factory = JWTFactory::customClaims([
+                'sub' => $user->first()->id, //id a conciliar del usuario
+                'iss' => config('app.name'),
+                'iat' => Carbon::now()->timestamp,
+                'exp' => Carbon::tomorrow()->timestamp,
+                'nbf' => Carbon::now()->timestamp,
+                'jti' => uniqid(),
+                'usr' => $user
+                ]);
+
+                $payload = $factory->make();
+
+                $jwt_token = JWTAuth::encode($payload);*/
+
+                $responseJSON = new ResponseJSON(Lang::get('messages.successTrue'),Lang::get('messages.BDsuccess'), count($user));
+                $responseJSON->data = $user;
+                // $responseJSON->token = $jwt_token->get();
+
+                /***********************************************/
+                return json_encode($responseJSON);
+                
+                } else {
+                
+                $responseJSON = new ResponseJSON(Lang::get('messages.successFalse'),Lang::get('messages.errorsBD'), count($user));
+                $responseJSON->data = [];
+                return json_encode($responseJSON);
+                
+            }
+        }
+        
+    }
+
     public function SMS(Request $request){
 
         Log::info('[APIUsuarios][SMS]');
@@ -374,7 +653,6 @@ class APIUsuarios extends Controller
         }
     }
 
-    /*Email Verification*/
     public function VerifyMail($verification_code, Request $request){
         Log::info('[Index][Verify]');
         if($request->isMethod('GET')) {
@@ -410,7 +688,7 @@ class APIUsuarios extends Controller
         } else {
           abort(404);
         }
-      }
+    }
 
     public function Registrar(Request $request){
       
@@ -424,7 +702,7 @@ class APIUsuarios extends Controller
             header('Access-Control-Allow-Origin: *');
             header('Access-Control-Allow-Methods: *');
             header('Access-Control-Allow-Headers: *');
-/*
+            /*
 
             Validator::make($request->all(), [
                 'nombre' => 'required',
@@ -433,7 +711,7 @@ class APIUsuarios extends Controller
                 'telefono' => 'required',
                 'cel' => 'required',
               ])->validate();
-  */    
+            */    
             //Log::info('[APIUserNormal][registrar]2');
             $id_userfb = $request->input('id_userfb');
             $correo = $request->input('correo');
@@ -571,6 +849,255 @@ class APIUsuarios extends Controller
             
         } else {
             abort(404);
+        }
+    }
+
+    public function GetProfile(Request $request) {
+     
+        Log::info('[GetProfile]');
+
+        Log::info("[GetProfile] Método Recibido: ". $request->getMethod());
+
+        if($request->isMethod('GET')) {
+
+            header('Access-Control-Allow-Origin: *');
+            header('Access-Control-Allow-Methods: *');
+            header('Access-Control-Allow-Headers: *');
+
+            Validator::make($request->all(), [
+                'token' => 'required'
+            ])->validate();
+            
+            $token = $request->input('token');
+            $id_user = $request->input('id_user');
+
+            Log::info("[GetProfile][GetProfile] Token: ". $token);
+            Log::info("[GetProfile][GetProfile] ID User: ". $id_user);
+
+            try {
+
+                // attempt to verify the credentials and create a token for the user
+                $token = JWTAuth::getToken();
+                $token_decrypt = JWTAuth::getPayload($token)->toArray();
+
+                if(in_array(1, $token_decrypt["permisos"])){
+                    // $id_usuarios = $token_decrypt["usr"]->id_usuarios;   
+                    $usuario = Usuarios::getProfile($id_user);
+                
+                    Log::info($usuario);
+            
+                    if(count($usuario)>0){
+                    
+                    $responseJSON = new ResponseJSON(Lang::get('messages.successTrue'),Lang::get('messages.BDsuccess'), count($usuario));
+                    $responseJSON->data = $usuario;
+                    return json_encode($responseJSON);
+            
+                    } else {
+            
+                    $responseJSON = new ResponseJSON(Lang::get('messages.successFalse'),Lang::get('messages.errorsBD'), count($usuario));
+                    $responseJSON->data = [];
+                    return json_encode($responseJSON);
+            
+                    }
+
+                } else{
+                    $responseJSON = new ResponseJSON(Lang::get('messages.successFalse'),Lang::get('messages.errorsBD'), 0);
+                    $responseJSON->data = [];
+                    return json_encode($responseJSON);
+                }
+        
+              } catch (\Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
+        
+                //token_expired
+            
+                Log::info('[APIEmpresas][GetIdiomaObtener] Token error: token_expired');
+        
+                return redirect('/');
+          
+              } catch (\Tymon\JWTAuth\Exceptions\TokenInvalidException $e) {
+        
+                //token_invalid
+            
+                Log::info('[APIEmpresas][GetIdiomaObtener] Token error: token_invalid');
+        
+                return redirect('/');
+          
+              } catch (\Tymon\JWTAuth\Exceptions\JWTException $e) {
+        
+                //token_absent
+            
+                Log::info('[APIEmpresas][GetIdiomaObtener] Token error: token_absent');
+        
+                return redirect('/');
+          
+              }
+
+        }
+    }
+
+    public function GetMotos(Request $request) {
+     
+        Log::info('[APIUsuarios][GetMotos]');
+
+        Log::info("[APIUsuarios][GetMotos] Método Recibido: ". $request->getMethod());
+
+        if($request->isMethod('GET')) {
+
+            header('Access-Control-Allow-Origin: *');
+            header('Access-Control-Allow-Methods: *');
+            header('Access-Control-Allow-Headers: *');
+
+            Validator::make($request->all(), [
+                'token' => 'required'
+            ])->validate();
+            
+            $token = $request->input('token');
+            $id_user = $request->input('id_user');
+
+            Log::info("[APIUsuarios][GetMotos] Token: ". $token);
+            Log::info("[APIUsuarios][GetMotos] ID User: ". $id_user);
+
+            try {
+
+                // attempt to verify the credentials and create a token for the user
+                $token = JWTAuth::getToken();
+                $token_decrypt = JWTAuth::getPayload($token)->toArray();
+
+                if(in_array(1, $token_decrypt["permisos"])){
+                    // $id_usuarios = $token_decrypt["usr"]->id_usuarios;   
+                    $usuario = Motos::getMotos($id_user);
+                
+                    Log::info($usuario);
+            
+                    if(count($usuario)>0){
+                    
+                    $responseJSON = new ResponseJSON(Lang::get('messages.successTrue'),Lang::get('messages.BDsuccess'), count($usuario));
+                    $responseJSON->data = $usuario;
+                    return json_encode($responseJSON);
+            
+                    } else {
+            
+                    $responseJSON = new ResponseJSON(Lang::get('messages.successFalse'),Lang::get('messages.errorsBD'), count($usuario));
+                    $responseJSON->data = [];
+                    return json_encode($responseJSON);
+            
+                    }
+
+                } else{
+                    $responseJSON = new ResponseJSON(Lang::get('messages.successFalse'),Lang::get('messages.errorsBD'), 0);
+                    $responseJSON->data = [];
+                    return json_encode($responseJSON);
+                }
+        
+              } catch (\Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
+        
+                //token_expired
+            
+                Log::info('[APIEmpresas][GetIdiomaObtener] Token error: token_expired');
+        
+                return redirect('/');
+          
+              } catch (\Tymon\JWTAuth\Exceptions\TokenInvalidException $e) {
+        
+                //token_invalid
+            
+                Log::info('[APIEmpresas][GetIdiomaObtener] Token error: token_invalid');
+        
+                return redirect('/');
+          
+              } catch (\Tymon\JWTAuth\Exceptions\JWTException $e) {
+        
+                //token_absent
+            
+                Log::info('[APIEmpresas][GetIdiomaObtener] Token error: token_absent');
+        
+                return redirect('/');
+          
+              }
+
+        }
+    }
+
+    public function GetContactemerg(Request $request) {
+     
+        Log::info('[APIUsuarios][GetContactemerg]');
+
+        Log::info("[APIUsuarios][GetContactemerg] Método Recibido: ". $request->getMethod());
+
+        if($request->isMethod('GET')) {
+
+            header('Access-Control-Allow-Origin: *');
+            header('Access-Control-Allow-Methods: *');
+            header('Access-Control-Allow-Headers: *');
+
+            Validator::make($request->all(), [
+                'token' => 'required'
+            ])->validate();
+            
+            $token = $request->input('token');
+            $id_user = $request->input('id_user');
+
+            Log::info("[APIUsuarios][GetContactemerg] Token: ". $token);
+            Log::info("[APIUsuarios][GetContactemerg] ID User: ". $id_user);
+
+            try {
+
+                // attempt to verify the credentials and create a token for the user
+                $token = JWTAuth::getToken();
+                $token_decrypt = JWTAuth::getPayload($token)->toArray();
+
+                if(in_array(1, $token_decrypt["permisos"])){
+                    // $id_usuarios = $token_decrypt["usr"]->id_usuarios;   
+                    $usuario = Contacto_emergencia::getContactemerg($id_user);
+                
+                    Log::info($usuario);
+            
+                    if(count($usuario)>0){
+                    
+                    $responseJSON = new ResponseJSON(Lang::get('messages.successTrue'),Lang::get('messages.BDsuccess'), count($usuario));
+                    $responseJSON->data = $usuario;
+                    return json_encode($responseJSON);
+            
+                    } else {
+            
+                    $responseJSON = new ResponseJSON(Lang::get('messages.successFalse'),Lang::get('messages.errorsBD'), count($usuario));
+                    $responseJSON->data = [];
+                    return json_encode($responseJSON);
+            
+                    }
+
+                } else{
+                    $responseJSON = new ResponseJSON(Lang::get('messages.successFalse'),Lang::get('messages.errorsBD'), 0);
+                    $responseJSON->data = [];
+                    return json_encode($responseJSON);
+                }
+        
+              } catch (\Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
+        
+                //token_expired
+            
+                Log::info('[APIEmpresas][GetIdiomaObtener] Token error: token_expired');
+        
+                return redirect('/');
+          
+              } catch (\Tymon\JWTAuth\Exceptions\TokenInvalidException $e) {
+        
+                //token_invalid
+            
+                Log::info('[APIEmpresas][GetIdiomaObtener] Token error: token_invalid');
+        
+                return redirect('/');
+          
+              } catch (\Tymon\JWTAuth\Exceptions\JWTException $e) {
+        
+                //token_absent
+            
+                Log::info('[APIEmpresas][GetIdiomaObtener] Token error: token_absent');
+        
+                return redirect('/');
+          
+              }
+
         }
     }
 

@@ -23,9 +23,30 @@ class Usuarios extends Model
     const UPDATED_AT = 'updated_at';
     //public $attributes;
 
+    public function scopeGetProfile($query, $id_user){
 
-    public function scopeLookForByEmailandPassword($query, $user,$password)
-    {
+        Log::info("[Usuarios][scopeGetProfile]");
+
+        // $pass = hash("sha256", $pass);
+
+
+        //activar log query
+        DB::connection()->enableQueryLog();
+
+        $sql = $query->where([
+          ['id_usuarios', '=', $id_user],
+        ])->get();
+
+        //log query
+        $queries = DB::getQueryLog();
+        $last_query = end($queries);
+        Log::info($last_query);
+
+        return $sql;
+
+    }
+
+    public function scopeLookForByEmailandPassword($query, $user,$password){
 
         Log::info("[Usuario][scopeLookForByEmailandPassword]");
         Log::info("[Usuario][scopeLookForByEmailandPassword]" . $user);
@@ -53,8 +74,7 @@ class Usuarios extends Model
 
     }
 
-    public function scopeLookForByEmail($query, $user)
-    {
+    public function scopeLookForByEmail($query, $user){
 
         Log::info("[Usuario][scopeLookForByEmail]");
         Log::info("[Usuario][scopeLookForByEmail]" . $user);
@@ -65,8 +85,7 @@ class Usuarios extends Model
 
     }
 
-    public function scopeLookForByCel($query, $user)
-    {
+    public function scopeLookForByCel($query, $user){
 
         Log::info("[Usuario][scopeLookForByCel]");
         Log::info("[Usuario][scopeLookForByCel]" . $user);
@@ -77,8 +96,7 @@ class Usuarios extends Model
 
     }
 
-    public function scopeLookForByIDfb($query, $user)
-    {
+    public function scopeLookForByIDfb($query, $user){
 
         Log::info("[Usuario][scopeLookForByEmail]");
         Log::info("[Usuario][scopeLookForByEmail]" . $user);
@@ -129,6 +147,55 @@ class Usuarios extends Model
       $obj[0]->id = $usuarios->id;
 
       return $obj;
-  }
+    }
+
+    public function scopeUpdateSalud($query, $id_user, $seguro, $sangre, $alergia, $organos){
+      Log::info("[Salud][scopeUpdateSalud]");
+      DB::connection()->enableQueryLog();
+
+      $sql = $query->where([
+        ['id_usuarios', '=' , $id_user]
+        ])->update([
+          'seguro' => $seguro,
+          'sangre' => $sangre,
+          'alergia' => $alergia,
+          'organos' => $organos
+        ]
+        
+        );
+
+        //log query
+        $queries = DB::getQueryLog();
+        $last_query = end($queries);
+        Log::info($last_query);
+
+        return $sql;
+        
+    }
+
+    public function scopeUpdatePerfil($query, $id_user, $nombre, $apellido, $edad, $celular, $motoClub){
+      Log::info("[Salud][scopeUpdatePerfil]");
+      DB::connection()->enableQueryLog();
+
+      $sql = $query->where([
+        ['id_usuarios', '=' , $id_user]
+        ])->update([
+          'nombre' => $nombre,
+          'apellido' => $apellido,
+          'edad' => $edad,
+          'celular' => $celular,
+          'motoclub' => $motoClub
+        ]
+        
+        );
+
+        //log query
+        $queries = DB::getQueryLog();
+        $last_query = end($queries);
+        Log::info($last_query);
+
+        return $sql;
+        
+    }
 }
 ?>
