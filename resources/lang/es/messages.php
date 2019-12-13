@@ -67,6 +67,6 @@ return [
     'errorsSendSMS' => "Error al enviar código de verificación.",
     'VerifiedCode' => "El código de verificación es correcto.",
     'errorsVerifiedCode' => "El código de verificación es incorrecto.",
-
+    'errorChangePass' => "Error al cambiar la constraseña.",
 
 ];

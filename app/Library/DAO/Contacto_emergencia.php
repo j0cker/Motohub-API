@@ -47,8 +47,7 @@ class Contacto_emergencia extends Model
     }
 
 
-    public function scopeLookForByEmailandPassword($query, $user,$password)
-    {
+    public function scopeLookForByEmailandPassword($query, $user,$password){
 
         Log::info("[Contacto_emergencia][scopeLookForByEmailandPassword]");
         Log::info("[Contacto_emergencia][scopeLookForByEmailandPassword]" . $user);
@@ -63,12 +62,13 @@ class Contacto_emergencia extends Model
 
     }
 
-    public function scopeCreateUser($query, $contactoEmergenica, $parentezco, $celContacto){
+    public function scopeCreateUser($query, $id_usuarios, $contactoEmergenica, $parentezco, $celContacto){
 
       Log::info("[Contacto_emergencia][scopeCreateUser]");
 
       $contactos_emergencia = new Contacto_emergencia();
 
+      $contactos_emergencia->id_usuarios = $id_usuarios;
       $contactos_emergencia->contacto = $contactoEmergenica;
       $contactos_emergencia->parentezco = $parentezco;
       $contactos_emergencia->cel_contacto = $celContacto;

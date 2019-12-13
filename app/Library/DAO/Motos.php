@@ -35,7 +35,7 @@ class Motos extends Model
       DB::connection()->enableQueryLog();
 
       $sql = $query->where([
-        ['id_motos', '=', $id_user],
+        ['id_usuarios', '=', $id_user],
       ])->get();
 
       //log query
@@ -91,8 +91,7 @@ class Motos extends Model
         
     }
 
-    public function scopeLookForByEmailandPassword($query, $user,$password)
-    {
+    public function scopeLookForByEmailandPassword($query, $user,$password){
 
         Log::info("[Motos][scopeLookForByEmailandPassword]");
         Log::info("[Motos][scopeLookForByEmailandPassword]" . $user);
@@ -107,8 +106,7 @@ class Motos extends Model
 
     }
 
-    public function scopeLookForByVin($query, $user)
-    {
+    public function scopeLookForByVin($query, $user){
 
         Log::info("[Motos][scopeLookForByVin]");
         Log::info("[Motos][scopeLookForByVin]" . $user);
@@ -119,12 +117,13 @@ class Motos extends Model
 
     }
 
-    public function scopeCreateUser($query, $conductor, $propietario, $marca, $submarca, $modelo, $motor, $vin, $cc, $ciudad, $placas, $compania, $poliza){
+    public function scopeCreateUser($query, $id_usuarios, $conductor, $propietario, $marca, $submarca, $modelo, $motor, $vin, $cc, $ciudad, $placas, $compania, $poliza){
 
       Log::info("[Motos][scopeCreateUser]");
 
       $motos = new Motos();
 
+      $motos->id_usuarios = $id_usuarios;
       $motos->conductor = $conductor;
       $motos->propietario = $propietario;
       $motos->marca = $marca;
@@ -144,6 +143,24 @@ class Motos extends Model
       $obj[0]->id = $motos->id;
 
       return $obj;
-  }
+    }
+
+    public function scopeDeleteMoto($query, $vin){
+      Log::info("[Salud][scopeDeleteMoto]");
+      DB::connection()->enableQueryLog();
+
+      $sql = $query->where([
+        ['vin', '=', $vin]
+        ])->delete(); //return true in the other one return 1
+
+        //log query
+        $queries = DB::getQueryLog();
+        $last_query = end($queries);
+        Log::info($last_query);
+
+        return $sql;
+        
+    }
+
 }
 ?>

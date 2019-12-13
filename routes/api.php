@@ -25,6 +25,9 @@ use Illuminate\Http\Request;
 // Ingresar Usuarios
 Route::get('/usuarios/ingresar', 'APIUsuarios@Ingresar');
 
+// Cambiar Contraseña Usuarios
+Route::get('/usuarios/changePassword', 'APIUsuarios@ChangePassword');
+
 // Update Salud
 Route::get('/usuarios/updateSalud', 'APIUsuarios@UpdateSalud');
 
@@ -39,6 +42,12 @@ Route::get('/usuarios/updateSeguro', 'APIUsuarios@UpdateSeguro');
 
 // Registro Usuarios por correo
 Route::get('/usuarios/registrar', 'APIUsuarios@Registrar');
+
+// Registro Usuarios Nueva Moto
+Route::get('/usuarios/addMoto', 'APIUsuarios@AddMoto');
+
+// Delete Usuarios Moto
+Route::get('/usuarios/deleteMoto', 'APIUsuarios@DeleteMoto');
 
 // Get Perfil Usuarios
 Route::get('/usuarios/getProfile', 'APIUsuarios@GetProfile');

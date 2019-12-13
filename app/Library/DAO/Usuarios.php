@@ -74,6 +74,28 @@ class Usuarios extends Model
 
     }
 
+    public function scopeChangePassword($query, $celular,$password){
+      
+      Log::info("[Usuarios][scopeChangePassword]");
+      DB::connection()->enableQueryLog();
+
+      $pass = hash("sha256", $password);
+
+      $sql = $query->where([
+        ['celular', '=' , $celular]
+        ])->update([
+          'password' => $pass
+        ]);
+
+        //log query
+        $queries = DB::getQueryLog();
+        $last_query = end($queries);
+        Log::info($last_query);
+
+        return $sql;
+
+  }
+
     public function scopeLookForByEmail($query, $user){
 
         Log::info("[Usuario][scopeLookForByEmail]");
@@ -160,9 +182,7 @@ class Usuarios extends Model
           'sangre' => $sangre,
           'alergia' => $alergia,
           'organos' => $organos
-        ]
-        
-        );
+        ]);
 
         //log query
         $queries = DB::getQueryLog();

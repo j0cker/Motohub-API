@@ -41,31 +41,36 @@ class APIUsuarios extends Controller
                 'password' => 'required'
               ]);
 
-        Log::info('[Ingresar] conn1');
+            Log::info('[Ingresar] Conectado');
             $correo = $request->input('correo');
             $password = $request->input('password');
 
-            
-            Log::info('[Ingresar] conn');
-
+            Log::info("[APIUsuarios][Ingresar] Correo: ". $correo);
+            Log::info("[APIUsuarios][Ingresar] Password: ". $password);
 
             $user = Usuarios::lookForByEmailandPassword($correo,$password);
- 
             Log::info($user);
 
             if(count($user)>0){
+
+                $permisos_inter_object = Permisos_inter::lookForByIdUsuarios($user->first()->id_usuarios)->get();
+                $permisos_inter = array();
+                foreach($permisos_inter_object as $permiso){
+                    $permisos_inter[] = $permiso["id_permisos"];
+                }
 
                 /***********************************************/
                 $jwt_token = null;
 
                 $factory = JWTFactory::customClaims([
-                'sub' => $user->first()->id, //id a conciliar del usuario
+                'sub' => $user->first()->id_usuarios, //id a conciliar del usuario
                 'iss' => config('app.name'),
                 'iat' => Carbon::now()->timestamp,
                 'exp' => Carbon::tomorrow()->timestamp,
                 'nbf' => Carbon::now()->timestamp,
                 'jti' => uniqid(),
-                'usr' => $user
+                'usr'   => $user->first(),
+                'permisos' => $permisos_inter,
                 ]);
 
                 $payload = $factory->make();
@@ -86,6 +91,53 @@ class APIUsuarios extends Controller
                 return json_encode($responseJSON);
                 
             }
+        }
+    }
+
+    public function ChangePassword(Request $request){
+  
+        Log::info('[APIUsuarios][ChangePassword]');
+
+        Log::info("[APIUsuarios][ChangePassword] Método Recibido: ". $request->getMethod());
+
+        if($request->isMethod('GET')) {
+
+            header('Access-Control-Allow-Origin: *');
+            header('Access-Control-Allow-Methods: *');
+            header('Access-Control-Allow-Headers: *');
+
+            $this->validate($request, [
+                'celular' => 'required',
+                'password' => 'required'
+              ]);
+
+            Log::info('[APIUsuarios][ChangePassword] Conectado');
+            $celular = $request->input('celular');
+            $password = $request->input('password');
+
+            
+            Log::info('[APIUsuarios][Ingresar] conn');
+
+
+            $usuario = Usuarios::changePassword($celular,$password);
+ 
+            Log::info($usuario);
+            if($usuario == 1){
+
+                Log::info('[APIUsuarios][ChangePassword] Se actualizo los datos de la moto en la tabla Motos');
+                    
+                $responseJSON = new ResponseJSON(Lang::get('messages.successTrue'),Lang::get('messages.BDdata'), 0);
+                $responseJSON->data = $usuario;
+                return json_encode($responseJSON);
+    
+            } else {
+                $responseJSON = new ResponseJSON(Lang::get('messages.successFalse'),Lang::get('messages.errorsChangePass'), 0);
+                $responseJSON->data = $usuario;
+                return json_encode($responseJSON);
+        
+            }
+    
+            return "";
         }
     }
 
@@ -583,14 +635,14 @@ class APIUsuarios extends Controller
 
             if($status === 'pending'){
                     
-                $responseJSON = new ResponseJSON(Lang::get('messages.successTrue'),Lang::get('messages.SendSMS'), count($obj[0]->status));
+                $responseJSON = new ResponseJSON(Lang::get('messages.successTrue'),Lang::get('messages.SendSMS'), 0);
                 $responseJSON->data = $obj;
                 return json_encode($responseJSON);
         
             
 
             } else {
-                $responseJSON = new ResponseJSON(Lang::get('messages.successFalse'),Lang::get('messages.errorsSendSMS'), count($obj[0]->status));
+                $responseJSON = new ResponseJSON(Lang::get('messages.successFalse'),Lang::get('messages.errorsSendSMS'), 0);
                 $responseJSON->data = $obj;
                 return json_encode($responseJSON);
         
@@ -633,14 +685,14 @@ class APIUsuarios extends Controller
 
             if($status === 'approved'){
                     
-                $responseJSON = new ResponseJSON(Lang::get('messages.successTrue'),Lang::get('messages.VerifiedCode'), count($obj[0]->status));
+                $responseJSON = new ResponseJSON(Lang::get('messages.successTrue'),Lang::get('messages.VerifiedCode'), 0);
                 $responseJSON->data = $obj;
                 return json_encode($responseJSON);
         
             
 
             } else {
-                $responseJSON = new ResponseJSON(Lang::get('messages.successFalse'),Lang::get('messages.errorsVerifiedCode'), count($obj[0]->status));
+                $responseJSON = new ResponseJSON(Lang::get('messages.successFalse'),Lang::get('messages.errorsVerifiedCode'), 0);
                 $responseJSON->data = $obj;
                 return json_encode($responseJSON);
         
@@ -774,10 +826,14 @@ class APIUsuarios extends Controller
             $usuario = Usuarios::createUser( $id_userfb, $correo, $password, $nombre, $apellido, $edad, $celular, $motoClub, $seguro, $sangre, $alergia, $organos);
             Log::info($usuario);
 
-            $motos = Motos::createUser( $conductor, $propietario, $marca, $submarca, $modelo, $motor, $vin, $cc, $ciudad, $placas, $compania, $poliza);
+            // id de usuario
+            // Log::info('[APIUsuarios][registar] Id: ' . $usuario[0]->id);
+            $id_usuarios = $usuario[0]->id;
+
+            $motos = Motos::createUser( $id_usuarios, $conductor, $propietario, $marca, $submarca, $modelo, $motor, $vin, $cc, $ciudad, $placas, $compania, $poliza);
             Log::info($motos);
 
-            $contacto_emergencia = Contacto_emergencia::createUser( $contactoEmergenica, $parentezco, $celContacto);
+            $contacto_emergencia = Contacto_emergencia::createUser( $id_usuarios, $contactoEmergenica, $parentezco, $celContacto);
             Log::info($contacto_emergencia);
     
             if($usuario[0]->save == 1 && $motos[0]->save == 1 && $contacto_emergencia[0]->save == 1){
@@ -852,6 +908,135 @@ class APIUsuarios extends Controller
         }
     }
 
+    public function AddMoto(Request $request){
+      
+        Log::info('[APIUserNormal][AddMoto]');
+
+        Log::info("[APIUserNormal][AddMoto] Método Recibido: ". $request->getMethod());
+
+
+        if($request->isMethod('GET')) {
+
+            header('Access-Control-Allow-Origin: *');
+            header('Access-Control-Allow-Methods: *');
+            header('Access-Control-Allow-Headers: *');
+            /*
+
+            Validator::make($request->all(), [
+                'nombre' => 'required',
+                'apellido' => 'required',
+                'correo' => 'required',
+                'telefono' => 'required',
+                'cel' => 'required',
+              ])->validate();
+            */    
+            //Log::info('[APIUserNormal][registrar]2');
+            $id_usuarios = $request->input('id_usuarios');
+            $conductor = $request->input('conductor');
+            $propietario = $request->input('propietario');            
+            $marca = $request->input('marca');
+            $submarca = $request->input('submarca');
+            $modelo = $request->input('modelo');
+            $motor = $request->input('motor');
+            $vin = $request->input('vin');
+            $cc = $request->input('cc');
+            $ciudad = $request->input('ciudad');
+            $placas = $request->input('placas');
+            $compania = $request->input('compania');
+            $poliza = $request->input('poliza');
+
+
+            Log::info("[APIUserNormal][AddMoto] ID Usuario: ". $id_usuarios);
+            Log::info("[APIUserNormal][AddMoto] Conductor: ". $conductor);
+            Log::info("[APIUserNormal][AddMoto] Propietario: ". $propietario);
+            Log::info("[APIUserNormal][AddMoto] Marca: ". $marca);
+            Log::info("[APIUserNormal][AddMoto] Submarca: ". $submarca);
+            Log::info("[APIUserNormal][AddMoto] Modelo: ". $modelo);
+            Log::info("[APIUserNormal][AddMoto] Motor: ". $motor);
+            Log::info("[APIUserNormal][AddMoto] VIN: ". $vin);
+            Log::info("[APIUserNormal][AddMoto] CC: ". $cc);
+            Log::info("[APIUserNormal][AddMoto] Ciudad: ". $ciudad);
+            Log::info("[APIUserNormal][AddMoto] Placas: ". $placas);
+            Log::info("[APIUserNormal][AddMoto] Compania: ". $compania);
+            Log::info("[APIUserNormal][AddMoto] Poliza: ". $poliza);
+
+            $motos = Motos::createUser( $id_usuarios, $conductor, $propietario, $marca, $submarca, $modelo, $motor, $vin, $cc, $ciudad, $placas, $compania, $poliza);
+            Log::info($motos);
+    
+            if($motos[0]->save == 1){
+
+                Log::info('[APIUsuarios][AddMoto] Se registro el usuario en todas las tablas, creando permisos');
+
+                    $responseJSON = new ResponseJSON(Lang::get('messages.successTrue'),Lang::get('messages.BDdata'), count($motos));
+                    $responseJSON->data = $motos;
+                    // $responseJSON->token = $jwt_token->get();
+                    return json_encode($responseJSON);         
+    
+            } else {
+                $responseJSON = new ResponseJSON(Lang::get('messages.successFalse'),Lang::get('messages.errorsBDFail'), count($motos));
+                $responseJSON->data = $motos;
+                return json_encode($responseJSON);
+        
+            }
+    
+            return "";
+            
+        } else {
+            abort(404);
+        }
+    }
+
+    public function DeleteMoto(Request $request){
+      
+        Log::info('[APIUserNormal][DeleteMoto]');
+
+        Log::info("[APIUserNormal][DeleteMoto] Método Recibido: ". $request->getMethod());
+
+
+        if($request->isMethod('GET')) {
+
+            header('Access-Control-Allow-Origin: *');
+            header('Access-Control-Allow-Methods: *');
+            header('Access-Control-Allow-Headers: *');
+            
+
+            Validator::make($request->all(), [
+                'token' => 'required'
+            ])->validate();
+            
+            $token = $request->input('token');
+            $id_user = $request->input('id_user');
+            $vin = $request->input('vin');
+
+            Log::info("[APIUserNormal][DeleteMoto] Token: ". $token);
+            Log::info("[APIUserNormal][DeleteMoto] ID User: ". $id_user);
+            Log::info("[APIUserNormal][DeleteMoto] Nombre: ". $vin);
+                
+            $usuario = Motos::deleteMoto($vin);
+            Log::info($usuario);
+            if($usuario == 1){
+
+                Log::info('[APIUsuarios][DeleteMoto] Se ha eliminado los datos de la moto en la tabla Motos');
+                    
+                $responseJSON = new ResponseJSON(Lang::get('messages.successTrue'),Lang::get('messages.BDdata'), 0);
+                $responseJSON->data = $usuario;
+                return json_encode($responseJSON);
+    
+            } else {
+                $responseJSON = new ResponseJSON(Lang::get('messages.successFalse'),Lang::get('messages.errorsBDFail'), 0);
+                $responseJSON->data = $usuario;
+                return json_encode($responseJSON);
+        
+            }
+    
+            return "";
+            
+        } else {
+            abort(404);
+        }
+
+    }
+
     public function GetProfile(Request $request) {
      
         Log::info('[GetProfile]');
@@ -879,6 +1064,8 @@ class APIUsuarios extends Controller
                 // attempt to verify the credentials and create a token for the user
                 $token = JWTAuth::getToken();
                 $token_decrypt = JWTAuth::getPayload($token)->toArray();
+
+                Log::info("Token permisos: " . print_r($token_decrypt,true));
 
                 if(in_array(1, $token_decrypt["permisos"])){
                     // $id_usuarios = $token_decrypt["usr"]->id_usuarios;   
@@ -968,7 +1155,7 @@ class APIUsuarios extends Controller
                     $usuario = Motos::getMotos($id_user);
                 
                     Log::info($usuario);
-            
+        
                     if(count($usuario)>0){
                     
                     $responseJSON = new ResponseJSON(Lang::get('messages.successTrue'),Lang::get('messages.BDsuccess'), count($usuario));
@@ -984,7 +1171,7 @@ class APIUsuarios extends Controller
                     }
 
                 } else{
-                    $responseJSON = new ResponseJSON(Lang::get('messages.successFalse'),Lang::get('messages.errorsBD'), 0);
+                    $responseJSON = new ResponseJSON(Lang::get('messages.successFalse'),Lang::get('messages.errorsBD'), count($usuario));
                     $responseJSON->data = [];
                     return json_encode($responseJSON);
                 }
