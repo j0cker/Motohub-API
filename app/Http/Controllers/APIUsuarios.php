@@ -889,7 +889,7 @@ class APIUsuarios extends Controller
                     Log::info("[API][ingresar] Permisos: ");
                     Log::info($permisos_inter);
                     
-                    $responseJSON = new ResponseJSON(Lang::get('messages.successTrue'),Lang::get('messages.BDdata'), count($usuario));
+                    $responseJSON = new ResponseJSON(Lang::get('messages.successTrue'),Lang::get('messages.BDdata'), 0);
                     $responseJSON->data = $usuario;
                     $responseJSON->token = $jwt_token->get();
                     return json_encode($responseJSON);
@@ -897,7 +897,7 @@ class APIUsuarios extends Controller
                 }            
     
             } else {
-                $responseJSON = new ResponseJSON(Lang::get('messages.successFalse'),Lang::get('messages.errorsBDFail'), count($usuario));
+                $responseJSON = new ResponseJSON(Lang::get('messages.successFalse'),Lang::get('messages.errorsBDFail'), 0);
                 $responseJSON->data = $usuario;
                 return json_encode($responseJSON);
         
@@ -969,13 +969,13 @@ class APIUsuarios extends Controller
 
                 Log::info('[APIUsuarios][AddMoto] Se registro el usuario en todas las tablas, creando permisos');
 
-                    $responseJSON = new ResponseJSON(Lang::get('messages.successTrue'),Lang::get('messages.BDdata'), count($motos));
+                    $responseJSON = new ResponseJSON(Lang::get('messages.successTrue'),Lang::get('messages.BDdata'), 0);
                     $responseJSON->data = $motos;
                     // $responseJSON->token = $jwt_token->get();
                     return json_encode($responseJSON);         
     
             } else {
-                $responseJSON = new ResponseJSON(Lang::get('messages.successFalse'),Lang::get('messages.errorsBDFail'), count($motos));
+                $responseJSON = new ResponseJSON(Lang::get('messages.successFalse'),Lang::get('messages.errorsBDFail'), 0);
                 $responseJSON->data = $motos;
                 return json_encode($responseJSON);
         
