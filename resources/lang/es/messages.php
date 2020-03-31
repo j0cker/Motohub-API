@@ -20,7 +20,7 @@ return [
     'emailResetText1' => "You are receiving this email because we received a password reset request for your account.",
     'emailResetText2' => "Reset Password",
     'emailResetText3' => "If you did not request a password reset, no further action is required.",
-    'emailResetText4' => "If you’re having trouble clicking the button, copy and paste the URL below into your web browser:",
+    'emailResetText4' => "Si tiene problemas para hacer clic en el botón, copie y pegue la URL a continuación en su navegador web: ",
     //email Administration
     'emailAdminTitle' => "Email's Personalizados",
     'emailAdminTarget' => "Objetivo de alcance",

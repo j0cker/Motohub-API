@@ -54,6 +54,7 @@ Route::get('/usuarios/getProfile', 'APIUsuarios@GetProfile');
 
 // Get Perfil Motos
 Route::get('/usuarios/getMotos', 'APIUsuarios@GetMotos');
+Route::get('/usuarios/getEditMotos', 'APIUsuarios@GetEditMotos');
 
 // Get Perfil Contacto de Emergencia
 Route::get('/usuarios/getContactemerg', 'APIUsuarios@GetContactemerg');

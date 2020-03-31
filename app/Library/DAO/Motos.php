@@ -47,12 +47,35 @@ class Motos extends Model
 
     }
 
-    public function scopeUpdateMoto($query, $id_user, $motor, $placas){
+    public function scopeGetEditMotos($query, $vin){
+
+      Log::info("[Motos][scopeGetMotos]");
+
+      // $pass = hash("sha256", $pass);
+
+
+      //activar log query
+      DB::connection()->enableQueryLog();
+
+      $sql = $query->where([
+        ['vin', '=', $vin],
+      ])->get();
+
+      //log query
+      $queries = DB::getQueryLog();
+      $last_query = end($queries);
+      Log::info($last_query);
+
+      return $sql;
+
+    }
+
+    public function scopeUpdateMoto($query, $vin, $motor, $placas){
       Log::info("[Salud][scopeUpdateMoto]");
       DB::connection()->enableQueryLog();
 
       $sql = $query->where([
-        ['id_motos', '=' , $id_user]
+        ['vin', '=' , $vin]
         ])->update([
           'motor' => $motor,
           'placas' => $placas

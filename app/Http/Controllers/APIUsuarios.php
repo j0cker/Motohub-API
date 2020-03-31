@@ -426,12 +426,12 @@ class APIUsuarios extends Controller
 
                 Log::info('[APIUsuarios][UpdatePerfil] Se actualizo los datos de usuario en la tabla Usuarios');
                     
-                $responseJSON = new ResponseJSON(Lang::get('messages.successTrue'),Lang::get('messages.BDdata'), count($usuario));
+                $responseJSON = new ResponseJSON(Lang::get('messages.successTrue'),Lang::get('messages.BDdata'), 0);
                 $responseJSON->data = $usuario;
                 return json_encode($responseJSON);
     
             } else {
-                $responseJSON = new ResponseJSON(Lang::get('messages.successFalse'),Lang::get('messages.errorsBDFail'), count($usuario));
+                $responseJSON = new ResponseJSON(Lang::get('messages.successFalse'),Lang::get('messages.errorsBDFail'), 0);
                 $responseJSON->data = $usuario;
                 return json_encode($responseJSON);
         
@@ -464,26 +464,28 @@ class APIUsuarios extends Controller
             
             $token = $request->input('token');
             $id_user = $request->input('id_user');
+            $vin = $request->input('vin');
             $motor = $request->input('motor');
             $placas = $request->input('placas');
 
             Log::info("[GetProfile][GetProfile] Token: ". $token);
             Log::info("[GetProfile][GetProfile] ID User: ". $id_user);
+            Log::info("[GetProfile][GetProfile] Vin: ". $vin);
             Log::info("[APIUserNormal][registar] Nombre: ". $motor);
             Log::info("[APIUserNormal][registar] Apellido: ". $placas);       
                 
-            $usuario = Motos::updateMoto($id_user, $motor, $placas);
+            $usuario = Motos::updateMoto($vin, $motor, $placas);
             Log::info($usuario);
             if($usuario == 1){
 
                 Log::info('[APIUsuarios][UpdatePerfil] Se actualizo los datos de la moto en la tabla Motos');
                     
-                $responseJSON = new ResponseJSON(Lang::get('messages.successTrue'),Lang::get('messages.BDdata'), count($usuario));
+                $responseJSON = new ResponseJSON(Lang::get('messages.successTrue'),Lang::get('messages.BDdata'), 0);
                 $responseJSON->data = $usuario;
                 return json_encode($responseJSON);
     
             } else {
-                $responseJSON = new ResponseJSON(Lang::get('messages.successFalse'),Lang::get('messages.errorsBDFail'), count($usuario));
+                $responseJSON = new ResponseJSON(Lang::get('messages.successFalse'),Lang::get('messages.errorsBDFail'), 0);
                 $responseJSON->data = $usuario;
                 return json_encode($responseJSON);
         
@@ -530,12 +532,12 @@ class APIUsuarios extends Controller
 
                 Log::info('[APIUsuarios][UpdatePerfil] Se actualizo los datos de la moto en la tabla Motos');
                     
-                $responseJSON = new ResponseJSON(Lang::get('messages.successTrue'),Lang::get('messages.BDdata'), count($usuario));
+                $responseJSON = new ResponseJSON(Lang::get('messages.successTrue'),Lang::get('messages.BDdata'), 0);
                 $responseJSON->data = $usuario;
                 return json_encode($responseJSON);
     
             } else {
-                $responseJSON = new ResponseJSON(Lang::get('messages.successFalse'),Lang::get('messages.errorsBDFail'), count($usuario));
+                $responseJSON = new ResponseJSON(Lang::get('messages.successFalse'),Lang::get('messages.errorsBDFail'), 0);
                 $responseJSON->data = $usuario;
                 return json_encode($responseJSON);
         
@@ -1153,6 +1155,91 @@ class APIUsuarios extends Controller
                 if(in_array(1, $token_decrypt["permisos"])){
                     // $id_usuarios = $token_decrypt["usr"]->id_usuarios;   
                     $usuario = Motos::getMotos($id_user);
+                
+                    Log::info($usuario);
+        
+                    if(count($usuario)>0){
+                    
+                    $responseJSON = new ResponseJSON(Lang::get('messages.successTrue'),Lang::get('messages.BDsuccess'), count($usuario));
+                    $responseJSON->data = $usuario;
+                    return json_encode($responseJSON);
+            
+                    } else {
+            
+                    $responseJSON = new ResponseJSON(Lang::get('messages.successFalse'),Lang::get('messages.errorsBD'), count($usuario));
+                    $responseJSON->data = [];
+                    return json_encode($responseJSON);
+            
+                    }
+
+                } else{
+                    $responseJSON = new ResponseJSON(Lang::get('messages.successFalse'),Lang::get('messages.errorsBD'), count($usuario));
+                    $responseJSON->data = [];
+                    return json_encode($responseJSON);
+                }
+        
+              } catch (\Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
+        
+                //token_expired
+            
+                Log::info('[APIEmpresas][GetIdiomaObtener] Token error: token_expired');
+        
+                return redirect('/');
+          
+              } catch (\Tymon\JWTAuth\Exceptions\TokenInvalidException $e) {
+        
+                //token_invalid
+            
+                Log::info('[APIEmpresas][GetIdiomaObtener] Token error: token_invalid');
+        
+                return redirect('/');
+          
+              } catch (\Tymon\JWTAuth\Exceptions\JWTException $e) {
+        
+                //token_absent
+            
+                Log::info('[APIEmpresas][GetIdiomaObtener] Token error: token_absent');
+        
+                return redirect('/');
+          
+              }
+
+        }
+    }
+
+    public function GetEditMotos(Request $request) {
+     
+        Log::info('[APIUsuarios][GetEditMotos]');
+
+        Log::info("[APIUsuarios][GetEditMotos] Método Recibido: ". $request->getMethod());
+
+        if($request->isMethod('GET')) {
+
+            header('Access-Control-Allow-Origin: *');
+            header('Access-Control-Allow-Methods: *');
+            header('Access-Control-Allow-Headers: *');
+
+            Validator::make($request->all(), [
+                'token' => 'required'
+            ])->validate();
+            
+            $token = $request->input('token');
+            $id_user = $request->input('id_user');
+            $vin = $request->input('vin');
+
+            Log::info("[APIUsuarios][GetEditMotos] Token: ". $token);
+            Log::info("[APIUsuarios][GetEditMotos] ID User: ". $id_user);
+            Log::info("[APIUsuarios][GetEditMotos] Vin: ". $vin);
+
+            try {
+
+                // attempt to verify the credentials and create a token for the user
+                $token = JWTAuth::getToken();
+                $token_decrypt = JWTAuth::getPayload($token)->toArray();
+
+                if(in_array(1, $token_decrypt["permisos"])){
+                    // $id_usuarios = $token_decrypt["usr"]->id_usuarios;   
+                    $usuario = Motos::getEditMotos($vin);
                 
                     Log::info($usuario);
         

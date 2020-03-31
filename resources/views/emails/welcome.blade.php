@@ -45,18 +45,18 @@ $style = [
                                     <td style="{{ $fontFamily }} {{ $style['email-body_cell'] }}">
                                         <!-- Greeting -->
                                         <h1 style="{{ $style['header-1'] }}">
-                                            Hey {{$name}}, Welcome to <a href="{{ url('/') }}">{{ Config::get('app.name') }}</a>.
+                                            Hola {{$name}}, Bienvenido a <a href="{{ url('/') }}">{{ Config::get('app.name') }}</a>.
                                         </h1>
 
                                         <p style="{{ $style['paragraph'] }}">
-                                            We appreciated your selection of being part of us. We are committed with you, so we are going to give you the best service ever!.<br /><br />
+                                        Muchas gracias por sumarte a nuestra comunidad, tu registro ha sido realizado correctamente. Estamos comprometidos contigo, por lo que te ofreceremos los mejores servicios.<br /><br />
 
-                                            Your login is going to be:<br /><br />
+                                            Su inicio de sesión es:<br /><br />
 
-                                            Mail: {{ $email }}<br />
-                                            Pass: {{ $password }}<br /><br />
+                                            Correo: {{ $email }}<br />
+                                            Contraseña: {{ $password }}<br /><br />
 
-                                            <font color="red">In order to get your account ready, please click the button below to confirm your email</font><br /><br />
+                                            <font color="red">Para confirmar su cuenta, haga clic en el botón a continuación para confirmar su correo electrónico</font><br /><br />
 
                                         </p>
 
@@ -70,7 +70,7 @@ $style = [
                                                         style="{{ $fontFamily }} {{ $style['button'] }} {{ $style["button--green"] }}"
                                                         class="button"
                                                         target="_blank">
-                                                        Verify
+                                                        Verificar
                                                     </a>
                                                 </td>
                                             </tr>
