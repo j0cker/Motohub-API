@@ -368,12 +368,12 @@ class APIUsuarios extends Controller
 
                 Log::info('[APIUsuarios][UpdateSalud] Se actualizo los datos de salud en la tabla Usuarios');
                     
-                $responseJSON = new ResponseJSON(Lang::get('messages.successTrue'),Lang::get('messages.BDdata'), count($usuario));
+                $responseJSON = new ResponseJSON(Lang::get('messages.successTrue'),Lang::get('messages.BDdata'), 0);
                 $responseJSON->data = $usuario;
                 return json_encode($responseJSON);
     
             } else {
-                $responseJSON = new ResponseJSON(Lang::get('messages.successFalse'),Lang::get('messages.errorsBDFail'), count($usuario));
+                $responseJSON = new ResponseJSON(Lang::get('messages.successFalse'),Lang::get('messages.errorsBDFail'), 0);
                 $responseJSON->data = $usuario;
                 return json_encode($responseJSON);
         
